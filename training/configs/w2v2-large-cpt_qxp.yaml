@@ -1,0 +1,82 @@
+# Continued Pre-Training config for Puno Quechua (qxp)
+# Adapted from w2v2-large-cpt_indic-70h.yaml
+#
+# All path overrides (task.data, common.user_dir, checkpoint.finetune_from_model)
+# are passed at runtime by training/scripts/run_cpt.sh — do not hardcode paths here.
+#
+# Usage (from project root):
+#   bash training/scripts/run_cpt.sh [num_gpus] [train_subset]
+#   e.g. bash training/scripts/run_cpt.sh 1 "qxp_scripted,qxp_spontaneous"
+
+common:
+  fp16: true
+  log_format: json
+  log_interval: 200
+  user_dir: ???          # set by run_cpt.sh: $(pwd)/training/custom_task
+  wandb_project: asr-puno-quechua_cpt
+
+checkpoint:
+  finetune_from_model: ???   # set by run_cpt.sh: $(pwd)/checkpoints/xlsr2_300m.pt
+  save_dir: checkpoints/cpt
+  save_interval: 5000
+  save_interval_updates: 5000
+  keep_interval_updates: 5
+  no_epoch_checkpoints: true
+
+task:
+  _name: temp_sampled_audio_pretraining
+  sampling_alpha: 0.00       # equal mixing of manifests (no temperature skew)
+  data: ???                  # set by run_cpt.sh: $(pwd)/data/manifests/pretrain/
+  max_sample_size: 240000    # 15s at 16kHz
+  min_sample_size: 16000     # 1s at 16kHz
+  normalize: true
+
+dataset:
+  num_workers: 8
+  max_tokens: 1800000        # tuned for L40S 48GB (original was 1500000 for A100 40GB)
+  skip_invalid_size_inputs_valid_test: true
+  validate_interval: 5000
+  validate_interval_updates: 1000
+  train_subset: ???          # passed at CLI, e.g. "qxp_scripted,qxp_spontaneous"
+  valid_subset: qxp_valid
+
+distributed_training:
+  ddp_backend: no_c10d
+
+criterion:
+  _name: wav2vec
+  infonce: true
+  log_keys: ["prob_perplexity","code_perplexity","temp"]
+  loss_weights: [0.1, 0]
+
+optimization:
+  max_update: 10000
+  lr: [0.0001]
+  update_freq: [16]          # overridden by run_cpt.sh based on num_gpus (16 / num_gpus)
+
+optimizer:
+  _name: adam
+  adam_betas: (0.9,0.98)
+  adam_eps: 1e-06
+  weight_decay: 0.01
+
+lr_scheduler:
+  _name: polynomial_decay
+  warmup_updates: 10000      # warm up over the full 10k updates
+
+model:
+  _name: wav2vec2
+  quantize_targets: true
+  extractor_mode: layer_norm
+  layer_norm_first: true
+  final_dim: 768
+  latent_temp: [2.0,0.1,0.999995]
+  encoder_layerdrop: 0.05
+  dropout_input: 0.1
+  dropout_features: 0.1
+  feature_grad_mult: 0.1
+  conv_bias: true
+  encoder_layers: 24
+  encoder_embed_dim: 1024
+  encoder_ffn_embed_dim: 4096
+  encoder_attention_heads: 16

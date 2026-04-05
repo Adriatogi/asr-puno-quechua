@@ -1,0 +1,73 @@
+# Fine-tuning config for Puno Quechua (qxp)
+# Adapted from w2v2-large-finetune_punjabi-1h.yaml
+#
+# model.w2v_path and task.data are passed at runtime by training/scripts/run_finetune.sh
+#
+# Usage (from project root):
+#   bash training/scripts/run_finetune.sh path/to/converted_cpt.pt [num_gpus]
+
+common:
+  fp16: true
+  log_format: json
+  log_interval: 200
+  wandb_project: asr-puno-quechua_finetune
+
+checkpoint:
+  save_dir: checkpoints/ft
+  save_interval: 10000
+  save_interval_updates: 5000
+  keep_interval_updates: 1
+  no_epoch_checkpoints: true
+  best_checkpoint_metric: wer
+
+task:
+  _name: audio_finetuning
+  data: ???                  # set by run_finetune.sh: $(pwd)/data/manifests/finetune/qxp
+  labels: ltr
+  normalize: true
+
+dataset:
+  num_workers: 6
+  max_tokens: 5600000
+  skip_invalid_size_inputs_valid_test: true
+  validate_after_updates: 9500
+  validate_interval: 10000
+  validate_interval_updates: 1000
+  train_subset: train
+  valid_subset: valid,test
+
+distributed_training:
+  ddp_backend: no_c10d
+  distributed_world_size: 1  # overridden by run_finetune.sh
+
+criterion:
+  _name: ctc
+  zero_infinity: true
+
+optimization:
+  max_update: 13000
+  lr: [0.00005]
+  sentence_avg: true
+  update_freq: [2]           # overridden by run_finetune.sh based on num_gpus
+
+optimizer:
+  _name: adam
+  adam_betas: (0.9,0.98)
+  adam_eps: 1e-08
+
+lr_scheduler:
+  _name: tri_stage
+  phase_ratio: [0.1, 0.65, 0.25]
+  final_lr_scale: 0.05
+
+model:
+  _name: wav2vec_ctc
+  w2v_path: ???              # set by run_finetune.sh: path to converted CPT checkpoint
+  apply_mask: true
+  mask_prob: 0.75
+  mask_channel_prob: 0.25
+  mask_channel_length: 64
+  freeze_finetune_updates: 10000
+  layerdrop: 0.1
+  activation_dropout: 0.1
+  feature_grad_mult: 0.0

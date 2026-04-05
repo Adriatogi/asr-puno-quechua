@@ -10,3 +10,7 @@ librosa
 matplotlib
 pandas
 numpy
+
+# Data prep (prepare_cv_qxp_data.py)
+torchaudio
+tqdm
