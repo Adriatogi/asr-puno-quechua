@@ -1,0 +1,12 @@
+datacollective
+python-dotenv
+
+# Notebook
+jupyter
+ipython
+
+# Audio processing & visualization
+librosa
+matplotlib
+pandas
+numpy
