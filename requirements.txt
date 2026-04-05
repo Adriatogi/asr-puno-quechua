@@ -1,4 +1,4 @@
-datacollective
+requests
 python-dotenv
 
 # Notebook
