@@ -1,5 +1,6 @@
 requests
 python-dotenv
+wandb
 
 # Notebook
 jupyter
@@ -12,5 +13,6 @@ pandas
 numpy
 
 # Data prep (prepare_cv_qxp_data.py)
+torch
 torchaudio
 tqdm

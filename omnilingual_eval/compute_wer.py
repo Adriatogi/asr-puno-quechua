@@ -1,10 +1,12 @@
 import argparse
+from pathlib import Path
+
 import pandas as pd
 from jiwer import wer, cer
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Compute WER from TSV file with gold and auto transcriptions.")
-    parser.add_argument(tsv_path, required=True, help="TSV file")
+    parser.add_argument("tsv_path", help="TSV file")
     parser.add_argument("--output", default=None, help="Output TSV")
     return parser.parse_args()
     

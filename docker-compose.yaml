@@ -1,0 +1,27 @@
+version: "3.9"
+
+name: asr-puno-quechua
+
+services:
+  asr-puno-quechua:
+    image: fauxneticien/fairseq-asr
+    volumes:
+      - ${PWD}:/workspace
+    working_dir: /workspace
+    entrypoint:
+      - /bin/bash
+    stdin_open: true
+    tty: true
+    user: "${DOCKER_UID}:${DOCKER_GID}"
+    environment:
+      - WANDB_API_KEY=${WANDB_API_KEY}
+      - CUDA_VISIBLE_DEVICES=${DOCKER_CUDA_VISIBLE_DEVICES}
+    # Default shm_size of 64mb is too small for distributed training
+    shm_size: '16gb'
+    # Service must be network host for distributed training
+    network_mode: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]

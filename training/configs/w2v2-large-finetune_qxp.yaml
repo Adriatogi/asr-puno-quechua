@@ -27,13 +27,13 @@ task:
   normalize: true
 
 dataset:
-  num_workers: 6
+  num_workers: 4
   max_tokens: 5600000
   skip_invalid_size_inputs_valid_test: true
   validate_after_updates: 9500
   validate_interval: 10000
   validate_interval_updates: 1000
-  train_subset: train
+  train_subset: train_all
   valid_subset: valid,test
 
 distributed_training:
@@ -45,7 +45,7 @@ criterion:
   zero_infinity: true
 
 optimization:
-  max_update: 13000
+  max_update: 20000
   lr: [0.00005]
   sentence_avg: true
   update_freq: [2]           # overridden by run_finetune.sh based on num_gpus

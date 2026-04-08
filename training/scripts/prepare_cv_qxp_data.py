@@ -25,6 +25,7 @@ from collections import Counter
 from pathlib import Path
 
 import pandas as pd
+import soundfile as sf
 import torchaudio
 from tqdm import tqdm
 
@@ -74,8 +75,8 @@ def convert_directory(mp3_dir: Path, wav_dir: Path, skip_existing: bool = True):
 
 def get_num_frames(wav_path: Path) -> int:
     """Return number of samples in a WAV file."""
-    info = torchaudio.info(str(wav_path))
-    return info.num_frames
+    info = sf.info(str(wav_path))
+    return info.frames
 
 
 def write_manifest(tsv_path: Path, wav_root: Path, entries: list[tuple[str, int]]):
@@ -84,8 +85,10 @@ def write_manifest(tsv_path: Path, wav_root: Path, entries: list[tuple[str, int]
     entries: list of (wav_filename, num_frames)
     """
     tsv_path.parent.mkdir(parents=True, exist_ok=True)
+    # Use /workspace prefix so manifests work inside Docker
+    docker_root = Path("/workspace") / wav_root.resolve().relative_to(ROOT)
     with open(tsv_path, "w") as f:
-        f.write(str(wav_root.resolve()) + "\n")
+        f.write(str(docker_root) + "\n")
         for fname, nframes in entries:
             f.write(f"{fname}\t{nframes}\n")
     print(f"  Wrote {len(entries)} entries → {tsv_path.relative_to(ROOT)}")
@@ -153,12 +156,19 @@ def build_finetune_manifests(wav_scripted: Path, wav_spontaneous: Path,
     ft_dir = manifest_dir / "finetune" / "qxp"
     ft_dir.mkdir(parents=True, exist_ok=True)
 
-    # ── scripted splits (train / valid / test already defined in TSVs) ──
-    split_files = {"train": SCRIPTED_TRAIN, "valid": SCRIPTED_DEV, "test": SCRIPTED_TEST}
+    # ── scripted splits ──
+    # train: all validated clips whose speaker is not in dev or test
+    # valid / test: official splits as-is (speaker-disjoint from train)
+    df_dev  = pd.read_csv(SCRIPTED_DEV,  sep="\t")
+    df_test = pd.read_csv(SCRIPTED_TEST, sep="\t")
+    held_out_speakers = set(df_dev["client_id"]) | set(df_test["client_id"])
+    df_train = pd.read_csv(SCRIPTED_META, sep="\t")
+    df_train = df_train[~df_train["client_id"].isin(held_out_speakers)]
+
+    split_dfs = {"train": df_train, "valid": df_dev, "test": df_test}
     all_ltr_chars: Counter = Counter()
 
-    for split, tsv_path in split_files.items():
-        df = pd.read_csv(tsv_path, sep="\t")
+    for split, df in split_dfs.items():
         entries = []
         ltr_lines = []
         missing = 0

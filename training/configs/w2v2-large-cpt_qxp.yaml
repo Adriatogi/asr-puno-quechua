@@ -9,7 +9,7 @@
 #   e.g. bash training/scripts/run_cpt.sh 1 "qxp_scripted,qxp_spontaneous"
 
 common:
-  fp16: true
+  fp16: false                  # fp32: stable training, avoids fp16 loss_scale collapse (bf16 unsupported in this container)
   log_format: json
   log_interval: 200
   user_dir: ???          # set by run_cpt.sh: $(pwd)/training/custom_task
@@ -18,8 +18,7 @@ common:
 checkpoint:
   finetune_from_model: ???   # set by run_cpt.sh: $(pwd)/checkpoints/xlsr2_300m.pt
   save_dir: checkpoints/cpt
-  save_interval: 5000
-  save_interval_updates: 5000
+  save_interval_updates: 1000  # save every 1000 updates so crashes lose at most ~1000 steps
   keep_interval_updates: 5
   no_epoch_checkpoints: true
 
@@ -32,8 +31,8 @@ task:
   normalize: true
 
 dataset:
-  num_workers: 8
-  max_tokens: 1800000        # tuned for L40S 48GB (original was 1500000 for A100 40GB)
+  num_workers: 2
+  max_tokens: 1500000
   skip_invalid_size_inputs_valid_test: true
   validate_interval: 5000
   validate_interval_updates: 1000
@@ -62,7 +61,7 @@ optimizer:
 
 lr_scheduler:
   _name: polynomial_decay
-  warmup_updates: 10000      # warm up over the full 10k updates
+  warmup_updates: 1000       # 20% of max_update; trains at peak LR for remaining 8000 steps
 
 model:
   _name: wav2vec2

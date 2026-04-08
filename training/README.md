@@ -28,13 +28,19 @@ results/                            ← WER output
 
 ## Setup
 
-```bash
-# Install fairseq and dependencies
-pip install fairseq torchaudio
+Training requires Docker with GPU support. The `fauxneticien/fairseq-asr` image includes fairseq and all dependencies.
 
-# Download XLSR-128 base checkpoint (~3.8 GB)
+```bash
+# Start Docker container (from project root)
+docker-compose run asr-puno-quechua
+
+# Inside the container, download XLSR-128 base checkpoint (~3.8 GB)
 wget https://dl.fbaipublicfiles.com/fairseq/wav2vec/xlsr2_300m.pt -P checkpoints/
 ```
+
+All subsequent training commands should be run inside the Docker container.
+
+**Multi-GPU support:** The Docker container has access to all GPUs on your host. To use multiple GPUs, simply change the `NUM_GPUS` parameter in the training commands (see examples in Steps 2 and 4 below). The scripts automatically adjust gradient accumulation to maintain constant effective batch size.
 
 ## Step 1 — Prepare data
 

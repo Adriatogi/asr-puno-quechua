@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 # Continued Pre-Training (CPT) launcher for Puno Quechua.
-# Run from project root.
+# Run from project root inside the Docker container.
 #
 # Usage:
 #   bash training/scripts/run_cpt.sh [num_gpus] [train_subset]
 #
 # Examples:
-#   bash training/scripts/run_cpt.sh 1 "qxp_scripted,qxp_spontaneous"
 #   bash training/scripts/run_cpt.sh 4 "qxp_scripted,qxp_spontaneous"
 #   bash training/scripts/run_cpt.sh 1 "qxp_scripted"
+#
+# Note: CUDA_VISIBLE_DEVICES is inherited from the host (set by SLURM job scheduler).
+# Do not override it here — the host restricts this container to the allocated GPUs.
 
 set -euo pipefail
 
@@ -29,18 +31,21 @@ if [ ! -f "$CHECKPOINT_PATH" ]; then
 fi
 
 echo "Starting CPT:"
-echo "  GPUs:          $NUM_GPUS"
-echo "  Train subset:  $TRAIN_SUBSET"
-echo "  Update freq:   $UPDATE_FREQ"
-echo "  Checkpoint:    $CHECKPOINT_PATH"
+echo "  GPUs:              $NUM_GPUS"
+echo "  CUDA_VISIBLE_DEVS: ${CUDA_VISIBLE_DEVICES:-'(not set, using all)'}"
+echo "  Train subset:      $TRAIN_SUBSET"
+echo "  Update freq:       $UPDATE_FREQ"
+echo "  Checkpoint:        $CHECKPOINT_PATH"
 echo ""
 
 fairseq-hydra-train \
     --config-dir "$ROOT/training/configs" \
     --config-name w2v2-large-cpt_qxp \
+    hydra.run.dir="/tmp/hydra/\${now:%Y-%m-%d}/\${now:%H-%M-%S}" \
     common.user_dir="$ROOT/training/custom_task" \
     task.data="$ROOT/data/manifests/pretrain/" \
-    dataset.train_subset="$TRAIN_SUBSET" \
+    "dataset.train_subset='$TRAIN_SUBSET'" \
     optimization.update_freq="[$UPDATE_FREQ]" \
     distributed_training.distributed_world_size=$NUM_GPUS \
+    checkpoint.save_dir="$ROOT/checkpoints/cpt" \
     checkpoint.finetune_from_model="$CHECKPOINT_PATH"

@@ -20,8 +20,8 @@ Both datasets are from the [Mozilla Data Collective](https://datacollective.mozi
 ## Setup
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+conda create -n asr-puno python=3.10
+conda activate asr-puno
 pip install -r requirements.txt
 ```
 
@@ -44,3 +44,7 @@ jupyter notebook data/explore.ipynb
 ```
 
 Covers demographics, transcript lengths, clip durations, and interactive waveform/spectrogram/audio playback for both datasets.
+
+## Training
+
+Model training requires Docker with GPU support. See [training/README.md](training/README.md) for the full wav2vec 2.0 continued pre-training and fine-tuning pipeline.

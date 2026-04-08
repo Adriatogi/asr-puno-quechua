@@ -3,17 +3,18 @@
 # Run from project root.
 #
 # Usage:
-#   bash training/scripts/evaluate.sh <path/to/finetuned.pt> [results_dir]
+#   bash training/scripts/evaluate.sh <path/to/finetuned.pt> [results_dir] [manifest_dir]
 #
-# Example:
+# Examples:
 #   bash training/scripts/evaluate.sh checkpoints/ft/checkpoint_best.pt results/
+#   bash training/scripts/evaluate.sh checkpoints/ft/checkpoint_best.pt results/additional data/manifests/additional
 
 set -euo pipefail
 
 ROOT=$(pwd)
-FT_CHECKPOINT=${1:?"Usage: $0 <path/to/finetuned.pt> [results_dir]"}
+FT_CHECKPOINT=${1:?"Usage: $0 <path/to/finetuned.pt> [results_dir] [manifest_dir]"}
 RESULTS_DIR=${2:-"$ROOT/results"}
-MANIFEST_DIR="$ROOT/data/manifests/finetune/qxp"
+MANIFEST_DIR=${3:-"$ROOT/data/manifests/finetune/qxp"}
 
 if [ ! -f "$FT_CHECKPOINT" ]; then
     echo "ERROR: Checkpoint not found: $FT_CHECKPOINT"
