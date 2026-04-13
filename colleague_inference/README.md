@@ -29,20 +29,23 @@ huggingface-cli download Adriatogi/wav2vec2-puno-quechua-ft-cpt-validated \
     --local-dir checkpoints/ft_cpt_validated/
 ```
 
-**3. Configure your GPU**
-
-Copy `.env.example` to `.env` and set your GPU indices:
+**3. Create your `.env` file**
 
 ```bash
-cp .env.example .env
-# Edit .env: set DOCKER_CUDA_VISIBLE_DEVICES to your GPU index, e.g. DOCKER_CUDA_VISIBLE_DEVICES=0
+cat > .env <<EOF
+DOCKER_UID=$(id -u)
+DOCKER_GID=$(id -g)
+DOCKER_CUDA_VISIBLE_DEVICES=0
+EOF
 ```
+
+This tells Docker to run as your user and use GPU 0. If you have multiple GPUs and want a specific one, change `0` to the relevant index. You do **not** need to run `setup_gpus.sh` — that script is specific to a different machine.
 
 ---
 
 ## Usage
 
-All commands are run from the project root. Docker handles all dependencies.
+All commands are run from the project root using `docker compose` (not plain `docker run`). The `docker-compose.yaml` in the repo handles the entrypoint, GPU access, and bind-mounting the project directory — all dependencies are baked into the image.
 
 **Transcribe one or more files**
 
