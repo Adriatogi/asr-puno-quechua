@@ -33,7 +33,7 @@ dataset:
   validate_after_updates: 9500
   validate_interval: 10000
   validate_interval_updates: 1000
-  train_subset: train_all
+  train_subset: train  # overridden by run_finetune.sh (train or train_silver)
   valid_subset: valid,test
 
 distributed_training:

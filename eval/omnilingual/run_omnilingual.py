@@ -38,8 +38,8 @@ def main():
     args = parse_args()
     tsv_path = Path(args.tsv)
     audio_dir = Path(args.audio_dir)
-    output_path = Path(args.output) if args.output else tsv_path.with_stem(tsv_path.stem + "_transcrit")
-    temp_path = tsv_path.with_stem(tsv_path.stem + "_temp")  # fichier temporaire
+    output_path = Path(args.output) if args.output else tsv_path.with_stem(tsv_path.stem + "_transcribed")
+    temp_path = tsv_path.with_stem(tsv_path.stem + "_temp")  # temporary file
     audio_file = args.col_audio
     
     if not tsv_path.exists() or not audio_dir.exists():
@@ -53,7 +53,7 @@ def main():
     if "transcription" not in df.columns:
         df["transcription"] = ""
 
-    # Préparer la liste des fichiers à transcrire
+    # Build list of files to transcribe
     audio_paths = []
     indices = []
     missing = []
@@ -80,7 +80,7 @@ def main():
     errors = []
     processed = 0
 
-    # Transcription avec sauvegarde périodique
+    # Transcribe with periodic backup
     for start in range(0, len(audio_paths), args.batch_size):
         batch_paths = audio_paths[start:start+args.batch_size]
         batch_indices = indices[start:start+args.batch_size]
@@ -96,18 +96,18 @@ def main():
                 processed += 1
                 print(f"[{processed}/{len(audio_paths)}] {filename} → {text[:80]}")
 
-                # Sauvegarde périodique
+                # Periodic backup
                 if processed % args.save_every == 0:
                     df.to_csv(temp_path, sep="\t", index=False)
-                    print(f"→ Sauvegarde temporaire ({processed}) : {temp_path}")
+                    print(f"→ Temp backup ({processed}): {temp_path}")
 
         except Exception as e:
-            print(f"Erreur batch : {e}")
+            print(f"Batch error: {e}")
             for idx in batch_indices:
                 df.at[idx, "transcription"] = f"__ERREUR__: {e}"
                 errors.append(df.at[idx, audio_file])
 
-    # Sauvegarde finale
+    # Final save
     df.to_csv(output_path, sep="\t", index=False)
     print(f"\nFinal file saved : {output_path}")
 
@@ -116,7 +116,7 @@ def main():
     if errors:
         print(f"{len(errors)} files with errors : {errors}")
 
-    # Supprimer le fichier temporaire si tout est OK
+    # Delete temp file if everything succeeded
     if temp_path.exists() and not errors:
         temp_path.unlink()
         print(f"Temp file deleted : {temp_path}")

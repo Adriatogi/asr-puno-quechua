@@ -215,3 +215,8 @@ data/wav/*
 logs/
 checkpoints/
 outputs/*
+data/splits_joh/silver_spontaneous/
+data/splits_joh/validated_spontaneous/
+data/splits_joh/validated_scripted/
+data/splits_joh/qxp_additional/
+results/*

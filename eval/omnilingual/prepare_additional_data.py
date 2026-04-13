@@ -9,7 +9,7 @@ Creates:
       dict.ltr.txt                  <- copied from finetune/qxp/
 
 Usage (from project root):
-  python omnilingual_eval/prepare_additional_data.py
+  python eval/omnilingual/prepare_additional_data.py
 """
 
 import shutil
