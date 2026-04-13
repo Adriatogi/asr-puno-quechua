@@ -1,0 +1,7 @@
+model,subset,wer,cer,n_utterances
+ft_cpt_validated,test,1.22,0.19,2296
+ft_cpt_validated,test_spont,13.59,1.74,360
+ft_cpt_silver,test,2.29,0.32,2296
+ft_cpt_silver,test_spont,3.37,0.44,360
+ft_xlsr_validated,test,2.40,0.35,2296
+ft_xlsr_validated,test_spont,13.25,1.68,360

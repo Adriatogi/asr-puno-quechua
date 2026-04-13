@@ -210,13 +210,37 @@ __marimo__/
 .pip/
 data/scripted/
 data/spontaneous/
-data/manifests/*
 data/wav/*
 logs/
 checkpoints/
 outputs/*
-data/splits_joh/silver_spontaneous/
-data/splits_joh/validated_spontaneous/
-data/splits_joh/validated_scripted/
+
+# splits: track validated + silver (used in experiments); ignore qxp_additional (not in main eval)
 data/splits_joh/qxp_additional/
+
+# manifests: track qxp_v2 test/valid splits + all LTR files + dict
+#   ignore train*.tsv (contain absolute /workspace/ Docker paths, useless without audio)
+#   ignore pretrain manifests (CPT, not needed for eval verification)
+data/manifests/*
+!data/manifests/finetune/
+data/manifests/finetune/*
+!data/manifests/finetune/qxp_v2/
+data/manifests/finetune/qxp_v2/train.tsv
+data/manifests/finetune/qxp_v2/train_silver.tsv
+
+# results: track hypo/ref files, scored TSVs, and summary CSV
+#   ignore hydra config artifacts and fairseq wer files (those are SER, not WER)
+#   ignore unscored omnilingual TSVs (scored versions have the gold column)
 results/*
+!results/summary.csv
+!results/ft_cpt_validated/
+!results/ft_cpt_silver/
+!results/ft_xlsr_validated/
+!results/ft_xlsr_silver/
+!results/omnilingual/
+results/ft_*/*/*/.hydra/
+results/ft_*/*/*/infer.log
+results/ft_*/*/*/wer
+results/omnilingual/llm_300m/
+results/omnilingual/*/test_transcribed.tsv
+results/omnilingual/*/test_spont_transcribed.tsv
