@@ -9,9 +9,11 @@ Both datasets are from the [Mozilla Data Collective](https://datacollective.mozi
 | | Scripted Speech 25.0 | Spontaneous Speech 3.0 |
 |---|---|---|
 | **Speech type** | Speakers read pre-written sentences | Speakers respond naturally to prompts |
+| **Prompt** | 2,070 sentences | 150 questions |
 | **Clips** | 25,382 | 7,286 |
 | **Validated** | 22,727 (89.5%) | 1,074 (14.7%) |
 | **Validated duration** | 31.2 hours | 5.2 hours |
+| **Avg. clip duration** | 4.937s  | 17.45s |
 | **Speakers** | 81 | 110 |
 | **Best for** | ASR model training | Natural prosody, language patterns |
 
