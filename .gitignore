@@ -244,3 +244,8 @@ results/ft_*/*/*/wer
 results/omnilingual/llm_300m/
 results/omnilingual/*/test_transcribed.tsv
 results/omnilingual/*/test_spont_transcribed.tsv
+hf_export/
+results/*/colleague_eval_small/*
+results/*/test/*
+results/*/test_spont/*
+results/omnilingual/*/*.tsv

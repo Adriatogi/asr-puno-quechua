@@ -83,11 +83,11 @@ def find_files(results_dir: Path, model: str, subset: str):
     )
 
 
-def main(results_dir: Path):
+def main(results_dir: Path, models: list = MODELS, subsets: list = SUBSETS):
     summary = []
 
-    for model in MODELS:
-        for subset in SUBSETS:
+    for model in models:
+        for subset in subsets:
             hw, rw, hu, ru = find_files(results_dir, model, subset)
 
             if not hw or not rw:
@@ -137,6 +137,8 @@ def main(results_dir: Path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--results-dir", type=Path, default=Path("results"))
+    parser.add_argument("--subsets", nargs="+", default=SUBSETS)
+    parser.add_argument("--models", nargs="+", default=MODELS)
     args = parser.parse_args()
     print(f"Parsing results from {args.results_dir}/\n")
-    main(args.results_dir)
+    main(args.results_dir, models=args.models, subsets=args.subsets)
