@@ -79,6 +79,22 @@ docker compose run asr-puno-quechua -c \
 
 ---
 
+## Reproducing the test set evaluation
+
+The test manifests (`data/manifests/finetune/qxp_v2/test.tsv`, `test_spont.tsv`) are included in the repo, but the audio files are not. To download them:
+
+1. Get an API key from [datacollective.mozillafoundation.org](https://datacollective.mozillafoundation.org) (Profile → API)
+2. Add it to `.env`: `MDC_API_KEY=your-key-here`
+3. Run: `conda activate asr-puno && python data/download_data.py`
+
+Then transcribe the test set:
+```bash
+docker compose run asr-puno-quechua -c \
+  "python inference/transcribe.py --tsv data/manifests/finetune/qxp_v2/test.tsv --output_tsv results/test_eval.tsv"
+```
+
+---
+
 ## Notes
 
 - **Audio format**: WAV or MP3, any sample rate, mono or stereo — converted to 16kHz mono automatically
