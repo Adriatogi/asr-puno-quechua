@@ -20,7 +20,7 @@ Silver data trades ~1–2% scripted WER for ~10% spontaneous WER — worth it if
 
 ## Run inference
 
-See [`colleague_inference/README.md`](colleague_inference/README.md) — clone the repo, download the checkpoint from HuggingFace, and transcribe audio with one Docker command. No conda or fairseq install needed.
+See [`inference/README.md`](inference/README.md) — clone the repo, download the checkpoint from HuggingFace, and transcribe audio with one Docker command. No conda or fairseq install needed.
 
 ## Datasets
 

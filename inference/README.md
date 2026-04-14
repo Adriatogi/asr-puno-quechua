@@ -50,8 +50,8 @@ All commands are run from the project root using `docker compose` (not plain `do
 **Transcribe one or more files**
 
 ```bash
-docker compose run asr-puno-quechua -c "python colleague_inference/transcribe.py recording.wav"
-docker compose run asr-puno-quechua -c "python colleague_inference/transcribe.py file1.wav file2.wav file3.wav"
+docker compose run asr-puno-quechua -c "python inference/transcribe.py recording.wav"
+docker compose run asr-puno-quechua -c "python inference/transcribe.py file1.wav file2.wav file3.wav"
 ```
 
 Output:
@@ -63,7 +63,7 @@ recording.wav  →  iskay urququnaq chaupinpi payqa tiyan
 
 ```bash
 docker compose run asr-puno-quechua -c \
-  "python colleague_inference/transcribe.py --input_dir ./my_audio/ --output_tsv results.tsv"
+  "python inference/transcribe.py --input_dir ./my_audio/ --output_tsv results.tsv"
 ```
 
 Output TSV columns: `path`, `transcription`
@@ -74,7 +74,7 @@ If you have a TSV with a `path` column:
 
 ```bash
 docker compose run asr-puno-quechua -c \
-  "python colleague_inference/transcribe.py --tsv my_manifest.tsv --output_tsv results.tsv"
+  "python inference/transcribe.py --tsv my_manifest.tsv --output_tsv results.tsv"
 ```
 
 ---

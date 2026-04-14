@@ -4,12 +4,12 @@ Transcribe Puno Quechua audio with ft_cpt_validated (1.22% WER scripted).
 Run inside Docker from the project root.
 
 Single files:
-  docker compose run asr-puno-quechua -c "python colleague_inference/transcribe.py recording.wav"
-  docker compose run asr-puno-quechua -c "python colleague_inference/transcribe.py *.wav"
+  docker compose run asr-puno-quechua -c "python inference/transcribe.py recording.wav"
+  docker compose run asr-puno-quechua -c "python inference/transcribe.py *.wav"
 
 Batch (writes TSV):
-  docker compose run asr-puno-quechua -c "python colleague_inference/transcribe.py --input_dir ./my_audio/ --output_tsv results.tsv"
-  docker compose run asr-puno-quechua -c "python colleague_inference/transcribe.py --tsv manifest.tsv --output_tsv results.tsv"
+  docker compose run asr-puno-quechua -c "python inference/transcribe.py --input_dir ./my_audio/ --output_tsv results.tsv"
+  docker compose run asr-puno-quechua -c "python inference/transcribe.py --tsv manifest.tsv --output_tsv results.tsv"
 """
 
 import argparse
