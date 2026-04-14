@@ -1,6 +1,24 @@
 # asr-puno-quechua
 
-Automatic speech recognition for Puno Quechua (qxp) using Mozilla Common Voice data.
+Automatic speech recognition for Puno Quechua (qxp) using Mozilla Common Voice data. We fine-tune wav2vec 2.0 models with continued pre-training (CPT) on Puno Quechua audio and evaluate on scripted and spontaneous speech.
+
+## Results
+
+| Model | Scripted WER | Scripted CER | Spontaneous WER | Spontaneous CER |
+|-------|-------------:|-------------:|----------------:|----------------:|
+| ft_cpt_validated | **1.22%** | 0.19% | 13.59% | 1.74% |
+| ft_cpt_silver | 2.29% | 0.32% | **3.37%** | **0.44%** |
+| ft_xlsr_validated | 2.40% | 0.35% | 13.25% | 1.68% |
+| ft_xlsr_silver | 4.50% | 0.59% | 6.90% | 0.85% |
+
+**CPT** = our continued pre-trained checkpoint; **XLSR** = public XLSR-128 300M baseline.  
+**Validated** = trained on gold-labeled data only; **Silver** = trained with additional auto-transcribed spontaneous speech.
+
+Silver data trades ~1–2% scripted WER for ~10% spontaneous WER — worth it if your use case involves conversational speech.
+
+## Run inference
+
+See [`colleague_inference/README.md`](colleague_inference/README.md) — clone the repo, download the checkpoint from HuggingFace, and transcribe audio with one Docker command. No conda or fairseq install needed.
 
 ## Datasets
 
@@ -9,17 +27,13 @@ Both datasets are from the [Mozilla Data Collective](https://datacollective.mozi
 | | Scripted Speech 25.0 | Spontaneous Speech 3.0 |
 |---|---|---|
 | **Speech type** | Speakers read pre-written sentences | Speakers respond naturally to prompts |
-| **Prompt** | 2,070 sentences | 150 questions |
 | **Clips** | 25,382 | 7,286 |
 | **Validated** | 22,727 (89.5%) | 1,074 (14.7%) |
 | **Validated duration** | 31.2 hours | 5.2 hours |
-| **Avg. clip duration** | 4.937s  | 17.45s |
+| **Avg. clip duration** | 4.937s | 17.45s |
 | **Speakers** | 81 | 110 |
-| **Best for** | ASR model training | Natural prosody, language patterns |
 
-**Scripted speech** is clearer and easier to transcribe — speakers read known sentences, so transcripts are exact. **Spontaneous speech** captures how people actually talk: natural hesitations, varied sentence structure, informal vocabulary. It's harder to transcribe but more representative of real-world use.
-
-## Setup
+## Setup (for training / evaluation)
 
 ```bash
 conda create -n asr-puno python=3.10
@@ -39,14 +53,6 @@ python data/download_data.py
 
 Data is saved to `data/scripted/` and `data/spontaneous/`.
 
-## Explore
-
-```bash
-jupyter notebook data/explore.ipynb
-```
-
-Covers demographics, transcript lengths, clip durations, and interactive waveform/spectrogram/audio playback for both datasets.
-
 ## Training
 
-Model training requires Docker with GPU support. See [training/README.md](training/README.md) for the full wav2vec 2.0 continued pre-training and fine-tuning pipeline.
+Model training requires Docker with GPU support. See [`pipeline.sh`](pipeline.sh) for the full pipeline: continued pre-training → fine-tuning → evaluation.
