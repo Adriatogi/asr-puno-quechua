@@ -10,8 +10,10 @@ Automatic speech recognition for Puno Quechua (qxp) using Mozilla Common Voice d
 | ft_cpt_silver | 2.29% | 0.32% | **3.37%** | **0.44%** |
 | ft_xlsr_validated | 2.40% | 0.35% | 13.25% | 1.68% |
 | ft_xlsr_silver | 4.50% | 0.59% | 6.90% | 0.85% |
+| omniASR LLM 300M v2 | 7.07% | 0.89% | 11.98% | 1.54% |
+| omniASR CTC 300M v2 | 24.47% | 3.05% | 20.22% | 2.43% |
 
-**CPT** = our continued pre-trained checkpoint; **XLSR** = public XLSR-128 300M baseline.  
+**CPT** = our continued pre-trained checkpoint; **XLSR** = public XLSR-128 300M baseline; **omniASR** = zero-shot Omnilingual baseline.  
 **Validated** = trained on gold-labeled data only; **Silver** = trained with additional auto-transcribed spontaneous speech.
 
 Silver data trades ~1–2% scripted WER for ~10% spontaneous WER — worth it if your use case involves conversational speech.
